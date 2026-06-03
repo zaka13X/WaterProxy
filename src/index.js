@@ -17,7 +17,7 @@ logging.set_level(logging.NONE);
 Object.assign(wisp.options, {
 	allow_udp_streams: false,
 	hostname_blacklist: [/example\.com/],
-	dns_servers: ["1.1.1.3", "1.0.0.3"],
+	dns_servers: ["9.9.9.9", "149.112.112.112"],
 });
 
 const fastify = Fastify({
