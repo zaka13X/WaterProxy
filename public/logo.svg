@@ -1,1 +1,23 @@
+<svg xmlns="http://w3.org" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Gradient to give the 'W' a sleek, modern depth -->
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0055ff" />
+      <stop offset="100%" stop-color="#00d4ff" />
+    </linearGradient>
+    
+    <!-- Subtle drop shadow to make the W pop -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Background Layer -->
+  <rect width="100%" height="100%" fill="#000000" />
+
+  <!-- Logo Mark (W) -->
+  <path d="M 100 150 L 175 350 L 250 225 L 325 350 L 400 150 L 350 150 L 295 290 L 250 210 L 205 290 L 150 150 Z" 
+        fill="url(#blueGradient)" 
+        filter="url(#dropShadow)" />
+</svg>
 
