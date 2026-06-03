@@ -18,7 +18,7 @@ FROM node:18-alpine
 ENV NODE_ENV=production
 
 LABEL maintainer="zaka13X" \
-      summary="Splash" \
+      summary="waterproxy" \
       description="Made with MercuryWorkshop's Scramjet + Wisp for transport."
 
 WORKDIR /app
