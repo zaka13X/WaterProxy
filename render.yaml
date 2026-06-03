@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: splash-v5
-    env: node
-    buildCommand: npm install
-    startCommand: node src/index.js
+    name: scramjet-demo
+    runtime: node
+    buildCommand: corepack enable && pnpm install
+    startCommand: pnpm start
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: NODE_VERSION
+        value: 20.11.0
