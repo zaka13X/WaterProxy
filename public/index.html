@@ -5,44 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>WaterProxy</title>
     <link rel="shortcut icon" href="favicon.webp" />
-    
-    <!-- Service Worker and Proxy Scripts (Deferred until global connection finishes) -->
-    <script src="/scram/scramjet.all.js"></script>
-    <script src="/epoxy.js"></script>
-    <script src="https://fastly.jsdelivr.net/npm/@wisp-cms/client/dist/index.js"></script>
+
+    <!-- Core Scramjet scripts. Ensure these paths match your actual public directory layout. -->
+    <script src="/scram/scramjet.codecs.js"></script>
+    <script src="/scram/scramjet.config.js"></script>
 
     <script>
-        // Use a global promise so that register-sw.js, index.js, and search.js 
-        // can guarantee the connection is alive before trying to register the worker.
-        window.wispInitialization = (async () => {
-            try {
-                // Establish connection using Epoxy transport
-                const connection = await window.Epoxy.connect("wss://wisp.mercurywork.shop");
-                console.log("Wisp connection has connected!");
-                window.wispConnection = connection;
-                return connection;
-            } catch (error) {
-                console.error("Failed to initialize Wisp connection:", error);
-                const errorElement = document.getElementById("sj-error");
-                if (errorElement) {
-                    errorElement.innerText = "An error occurred. Please try and restart.";
+        // Directly register the Scramjet service worker using standard navigator.serviceWorker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    // Update '/sw.js' if your service worker file is named differently or in another folder
+                    const registration = await navigator.serviceWorker.register('/sw.js', {
+                        scope: '/scram/' // Scramjet typically intercepts requests under its scope prefix
+                    });
+                    console.log('Scramjet Service Worker registered successfully:', registration.scope);
+                } catch (error) {
+                    console.error('Service Worker registration failed:', error);
+                    const errorElement = document.getElementById("sj-error");
+                    if (errorElement) {
+                        errorElement.innerText = "Service worker initialization failed.";
+                    }
                 }
-                throw error;
-            }
-        })();
+            });
+        } else {
+            console.error('Service Workers are not supported in this browser.');
+        }
     </script>
 
-    <!-- Load execution scripts downstream -->
-    <script src="/register-sw.js" defer></script>
+    <!-- Project logic execution scripts -->
     <script src="/search.js" defer></script>
     <script src="/index.js" defer></script>
 </head>
 <body style="background-color: black; color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;">
+    
     <div title="Logo" class="flex-center logo-wrapper header-center" style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 4rem;">
         <img class="logo" src="idk.png" alt="" style="max-width: 150px; margin-bottom: 1rem;" />
         <h1 style="margin: 0; font-weight: 300;">WaterProxy (b1.0.0)</h1>
     </div>
-    
+
     <div class="flex-center desc left-margin" style="display: flex; justify-content: center; text-align: center; max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
         <p style="line-height: 1.6; color: #ccc;"></p>
     </div>
@@ -57,5 +58,6 @@
         <p id="sj-error" style="color: #ff6b6b;"></p>
         <pre id="sj-error-code" style="color: #ff6b6b;"></pre>
     </div>
+
 </body>
 </html>
