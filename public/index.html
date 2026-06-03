@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>WaterProxy</title>
     <link rel="shortcut icon" content="favicon.webp" />
-    <link rel="stylesheet" href="" />
-    
+
+    <!-- Core Scripts (Load scripts sequentially if they have dependencies) -->
     <script src="/scram/scramjet.all.js"></script>
-    <!-- Epoxy and Wisp Client Implementations -->
     <script src="/epoxy.js"></script>
+    
     <!-- Loaded Wisp Client implementation via CDN -->
     <script src="https://fastly.jsdelivr.net/npm/@wisp-cms/client/dist/index.js"></script>
     
+    <!-- Deferred Scripts for Page Logic -->
     <script src="/register-sw.js" defer></script>
     <script src="/search.js" defer></script>
     <script src="/index.js" defer></script>
@@ -21,38 +22,45 @@
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
             try {
-                // Establish connection using Epoxy transport
-                const connection = await window.Epoxy.connect("wss://wisp.mercurywork.shop");
-                console.log("Wisp connection has connected!");
-                
-                // Set connection globally for your service worker / index scripts
-                window.wispConnection = connection; 
+                // Ensure Epoxy is available before connecting
+                if (window.Epoxy) {
+                    const connection = await window.Epoxy.connect("wss://wisp.mercurywork.shop");
+                    console.log("Wisp connection has connected!");
+                    window.wispConnection = connection;
+                } else {
+                    throw new Error("Epoxy framework failed to load.");
+                }
             } catch (error) {
                 console.error("Failed to initialize Wisp connection:", error);
                 const errorElement = document.getElementById("sj-error");
                 if (errorElement) {
-                    errorElement.innerText = "An error occured. Please try and restart.";
+                    errorElement.innerText = "An error occurred. Please try and restart.";
                 }
             }
         });
     </script>
 </head>
 <body style="background-color: black; color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;">
+
     <div title="Logo" class="flex-center logo-wrapper header-center" style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 4rem;">
         <img class="logo" src="idk.png" alt="" style="max-width: 150px; margin-bottom: 1rem;" />
         <h1 style="margin: 0; font-weight: 300;">WaterProxy (b1.0.0)</h1>
     </div>
+
     <div class="flex-center desc left-margin" style="display: flex; justify-content: center; text-align: center; max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
         <p style="line-height: 1.6; color: #ccc;"></p>
     </div>
-    <!-- Form handling handles Enter key submission natively -->
+
+    <!-- Form handling with preventDefault inside search.js or index.js -->
     <form id="sj-form" class="flex-center" style="display: flex; justify-content: center; margin-bottom: auto; padding: 0 1rem;">
         <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-        <input id="sj-address" type="text" placeholder="Search the web freely" style="width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background-color: #222; color: white; font-size: 1rem; outline: none;" />
+        <input id="sj-address" type="text" placeholder="Search the web freely" autocomplete="off" style="width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background-color: #222; color: white; font-size: 1rem; outline: none;" />
     </form>
-    <div class="desc left-margin" style="text-align: center;">
+
+    <div class="desc left-margin" style="text-align: center; margin-bottom: 2rem;">
         <p id="sj-error" style="color: #ff6b6b;"></p>
         <pre id="sj-error-code" style="color: #ff6b6b;"></pre>
     </div>
+
 </body>
 </html>
