@@ -5,15 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>Splash V3</title>
     <link rel="shortcut icon" content="favicon.webp" />
-    
     <!-- Original Proxy Hooks -->
     <script src="/scram/scramjet.all.js"></script>
     <script src="/baremux/index.js"></script>
     <link rel="stylesheet" href="index.css" />
     <script src="register-sw.js" defer></script>
     <script src="search.js" defer></script>
-    <script src="index.js" defer></script>
-
+    
     <style>
         /* Base Black UI Styles */
         body {
@@ -54,6 +52,7 @@
             flex-direction: column;
             align-items: center;
             margin: auto;
+            transition: opacity 0.3s ease;
         }
 
         .logo-wrapper {
@@ -133,6 +132,7 @@
             font-size: 0.8rem;
             color: #666666;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
+            transition: opacity 0.3s ease;
         }
 
         footer a {
@@ -145,24 +145,33 @@
         footer a:hover {
             color: #ffffff;
         }
+
+        /* Proxy Iframe Styles */
+        #proxy-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            z-index: 10;
+            display: none;
+            background-color: #ffffff; /* White background while page loads */
+        }
     </style>
 </head>
 <body>
-
     <!-- Particle Layer -->
     <canvas id="particle-canvas"></canvas>
 
     <!-- UI Interaction Layer -->
-    <div class="ui-container">
-        <div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-            <img class="logo" src="splash.svg" alt="Scramjet" />
+    <div class="ui-container" id="main-ui">
+        <div title="" class="flex-center logo-wrapper header-center">
+            <img class="logo" src="splash.svg" alt="" />
             <h1>Splash V3</h1>
         </div>
-
         <div class="flex-center desc left-margin">
-            <p>
-                An  pr*xy powered by Scramjet to bypass network restrictions seamlessly.
-            </p>
+            <p>An pr*xy powered by Scramjet to bypass network restrictions seamlessly.</p>
         </div>
 
         <!-- Functional Target Proxy Input Area -->
@@ -177,10 +186,12 @@
         </div>
     </div>
 
+    <!-- Proxy Iframe -->
+    <iframe id="proxy-frame"></iframe>
+
     <footer>
         <div>
             <a title="GitHub" href="https://github.com/zaka13X/Splash">My GitHub</a>
-        
             <a title="License information" href="credits.html">Credits</a>
         </div>
         <div>
@@ -188,66 +199,47 @@
         </div>
     </footer>
 
-    <!-- White Floating Particles Animation Script -->
+    <!-- Combined Scripts -->
     <script>
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
+        // Custom logic to hide UI and trigger iframe
+        const form = document.getElementById('sj-form');
+        const addressInput = document.getElementById('sj-address');
+        const mainUI = document.getElementById('main-ui');
+        const footer = document.querySelector('footer');
+        const proxyFrame = document.getElementById('proxy-frame');
 
-        let particles = [];
-        const maxParticles = 60;
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const url = addressInput.value.trim();
+            if (!url) return;
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+            // Hide the homepage UI smoothly
+            mainUI.style.opacity = '0';
+            footer.style.opacity = '0';
+            
+            setTimeout(() => {
+                mainUI.style.display = 'none';
+                footer.style.display = 'none';
+            }, 300);
 
-        class Particle {
-            constructor() {
-                this.reset();
+            // Fetch the proxied URL from scramjet
+            // Assuming scramjet module is globally defined and has a proxy url constructor
+            let proxiedUrl = '';
+            
+            // This relies on your existing `search.js` or `index.js` logic.
+            // Adjust the window.__scramjet$encode or scrambling function to fit your exact scramjet setup:
+            try {
+                // If your scramjet configuration creates a URL through specific backend configs:
+                proxiedUrl = __scramjet$encode ? __scramjet$encode(url) : url; 
+            } catch (err) {
+                proxiedUrl = url;
             }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = Math.random() * 0.4 - 0.2;
-                this.speedY = Math.random() * 0.4 - 0.2;
-                this.opacity = Math.random() * 0.5 + 0.1;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
 
-                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-                    this.reset();
-                }
-            }
-            draw() {
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function init() {
-            for (let i = 0; i < maxParticles; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            requestAnimationFrame(animate);
-        }
-
-        init();
-        animate();
+            // Set the iframe source and make it visible
+            proxyFrame.src = proxiedUrl;
+            proxyFrame.style.display = 'block';
+        });
     </script>
 </body>
 </html>
