@@ -1,50 +1,104 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Blocked</title>
-    <link rel="shortcut icon" content="favicon.webp" />
-    <script src="/scram/scramjet.all.js"></script>
-    <script src="/baremux/index.js"></script>
-    <link rel="stylesheet" href="index.css" />
-    <script src="register-sw.js" defer></script>
-    <script src="search.js" defer></script>
-    <script src="index.js" defer></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+<title>Blocked</title>
+<link rel="shortcut icon" content="favicon.webp" />
+
+<!-- Scramjet and BareMux scripts -->
+<script src="/scram/scramjet.all.js"></script>
+<script src="/baremux/index.js"></script> 
+
+<link rel="stylesheet" href="index.css" />
+<script src="register-sw.js" defer></script>
+<script src="search.js" defer></script>
+
+<!-- Inline script added to initialize Scramjet and handle submissions -->
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        // 1. Initialize Scramjet
+        if (typeof __scramjet !== 'undefined') {
+            try {
+                await __scramjet.config({
+                    codec: 'xor', 
+                    prefix: '/service/'
+                });
+                await __scramjet.register();
+            } catch (err) {
+                console.error('Scramjet initialization failed:', err);
+                document.getElementById('sj-error').textContent = 'Failed to load proxy.';
+            }
+        }
+
+        const form = document.getElementById('sj-form');
+        const addressInput = document.getElementById('sj-address');
+        const searchEngineInput = document.getElementById('sj-search-engine');
+
+        // Function to handle the actual loading / navigation
+        const handleNavigation = (e) => {
+            if (e) e.preventDefault(); // Prevent page reload
+            
+            const query = addressInput.value.trim();
+            if (!query) return;
+
+            let url;
+            try {
+                // Check if the input is already a valid URL
+                url = new URL(query);
+            } catch (_) {
+                // If not a valid URL, treat it as a search query
+                const searchTemplate = searchEngineInput.value || "https://www.google.com/search?q=%s";
+                url = new URL(searchTemplate.replace('%s', encodeURIComponent(query)));
+            }
+
+            // Route the request through Scramjet
+            if (typeof __scramjet !== 'undefined') {
+                window.location.href = __scramjet.codec.encode(url.toString());
+            } else {
+                console.error('__scramjet is not defined.');
+                document.getElementById('sj-error').textContent = 'Scramjet is not loaded!, Try and Refresh!';
+            }
+        };
+
+        // 2. Add submit event listener for pressing 'Enter' on the input
+        form.addEventListener('submit', handleNavigation);
+    });
+</script>
+
+<script src="index.js" defer></script>
 </head>
 <body style="background-color: black; color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;">
 
-    <div title="Logo" class="flex-center logo-wrapper header-center" style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 4rem;">
-        <img class="logo" src="idk.png" alt="" style="max-width: 150px; margin-bottom: 1rem;" />
-        <h1 style="margin: 0; font-weight: 300;">Splash V3</h1>
+<div title="Logo" class="flex-center logo-wrapper header-center" style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 4rem;">
+    <img class="logo" src="idk.png" alt="" style="max-width: 150px; margin-bottom: 1rem;" />
+    <h1 style="margin: 0; font-weight: 300;">Splash V3</h1>
+</div>
+
+<div class="flex-center desc left-margin" style="display: flex; justify-content: center; text-align: center; max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
+    <p style="line-height: 1.6; color: #ccc;"> </p>
+</div>
+
+<form id="sj-form" class="flex-center" style="display: flex; justify-content: center; margin-bottom: auto; padding: 0 1rem;">
+    <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+    <input id="sj-address" type="text" placeholder="Search the web freely" style="width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background-color: #222; color: white; font-size: 1rem; outline: none;" />
+</form>
+
+<div class="desc left-margin" style="text-align: center;">
+    <p id="sj-error" style="color: #ff6b6b;"></p>
+    <pre id="sj-error-code" style="color: #ff6b6b;"></pre>
+</div>
+
+<footer style="display: flex; justify-content: space-between; align-items: center; padding: 2rem; font-size: 0.9rem; border-top: 1px solid #222; color: #888;">
+    <div>
+        <a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop" style="color: #888; text-decoration: none; margin-right: 1.5rem;">Mercury Workshop</a> 
+        <a title="Splash!" href="https://github.com/zaka13X/Splash" style="color: #888; text-decoration: none; margin-right: 1.5rem;">GitHub</a> 
+        <a title="License information" href="credits.html" style="color: #888; text-decoration: none;">Credits</a>
     </div>
-
-    <div class="flex-center desc left-margin" style="display: flex; justify-content: center; text-align: center; max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
-        <p style="line-height: 1.6; color: #ccc;">
-            
-        </p>
+    <div>
+        <span>&copy; zaka13X/Splash 2026</span>
     </div>
-
-    <form id="sj-form" class="flex-center" style="display: flex; justify-content: center; margin-bottom: auto; padding: 0 1rem;">
-        <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-        <input id="sj-address" type="text" placeholder="Search the web freely" style="width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background-color: #222; color: white; font-size: 1rem; outline: none;" />
-    </form>
-
-    <div class="desc left-margin" style="text-align: center;">
-        <p id="sj-error" style="color: #ff6b6b;"></p>
-        <pre id="sj-error-code" style="color: #ff6b6b;"></pre>
-    </div>
-
-    <footer style="display: flex; justify-content: space-between; align-items: center; padding: 2rem; font-size: 0.9rem; border-top: 1px solid #222; color: #888;">
-        <div>
-            <a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop" style="color: #888; text-decoration: none; margin-right: 1.5rem;">Mercury Workshop</a>
-            <a title="The example demo app" href="https://github.com/MercuryWorkshop/Scramjet-Demo" style="color: #888; text-decoration: none; margin-right: 1.5rem;">GitHub</a>
-            <a title="License information" href="credits.html" style="color: #888; text-decoration: none;">Credits</a>
-        </div>
-        <div>
-            <span>&copy; MW 2026</span>
-        </div>
-    </footer>
+</footer>
 
 </body>
 </html>
