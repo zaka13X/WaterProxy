@@ -1,35 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>Splash V3</title>
+    <title>SPLASH V3</title>
     <link rel="shortcut icon" content="favicon.webp" />
-    <!-- Original Proxy Hooks -->
     <script src="/scram/scramjet.all.js"></script>
     <script src="/baremux/index.js"></script>
-    <link rel="stylesheet" href="index.css" />
     <script src="register-sw.js" defer></script>
     <script src="search.js" defer></script>
-    
+    <script src="index.js" defer></script>
     <style>
-        /* Base Black UI Styles */
+        /* Base Reset and Black Background */
         body {
             background-color: #000000;
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             overflow: hidden;
             position: relative;
         }
 
-        /* Ambient Background Particle Canvas */
+        /* Particle Canvas Background */
         #particle-canvas {
             position: absolute;
             top: 0;
@@ -40,206 +38,200 @@
             pointer-events: none;
         }
 
-        /* UI Container Layer */
-        .ui-container {
+        /* Content Layout Wrapper */
+        .main-container {
             position: relative;
             z-index: 2;
-            width: 100%;
+            width: 90%;
             max-width: 600px;
-            padding: 20px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: auto;
-            transition: opacity 0.3s ease;
-        }
-
-        .logo-wrapper {
             text-align: center;
-            margin-bottom: 20px;
+            padding: 20px;
         }
 
-        .logo {
-            max-width: 80px;
-            height: auto;
+        /* Typography & Structure */
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         h1 {
             font-size: 2.5rem;
-            letter-spacing: 2px;
             margin: 10px 0;
-            text-transform: uppercase;
-            font-weight: 300;
+            letter-spacing: 2px;
         }
 
         .desc {
-            text-align: center;
-            color: #aaaaaa;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            color: #cccccc;
+            font-size: 1rem;
+            line-height: 1.5;
             margin-bottom: 30px;
         }
 
-        /* Interactive Enter URL Elements */
-        #sj-form {
+        /* Forms and Input Boxes */
+        form {
             width: 100%;
-            position: relative;
+            margin-bottom: 15px;
         }
 
-        #sj-address {
+        input[type="text"] {
             width: 100%;
-            padding: 15px 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
             color: #ffffff;
-            font-size: 1.1rem;
-            outline: none;
             box-sizing: border-box;
             transition: all 0.3s ease;
-            text-align: center;
         }
 
-        #sj-address:focus {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.6);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
         }
 
         #sj-error {
-            color: #ff5252;
-            margin-top: 15px;
-            font-size: 0.85rem;
+            color: #ff4a4a;
         }
 
-        #sj-error-code {
-            color: #ff5252;
-            font-size: 0.75rem;
-            opacity: 0.7;
-        }
-
-        /* Footer Overlay */
+        /* Footer Links */
         footer {
-            position: relative;
+            position: absolute;
+            bottom: 20px;
             z-index: 2;
             width: 100%;
-            padding: 20px;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            color: #666666;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            transition: opacity 0.3s ease;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #888888;
+        }
+
+        footer div {
+            margin: 5px 0;
         }
 
         footer a {
-            color: #888888;
+            color: #aaaaaa;
             text-decoration: none;
-            margin-right: 15px;
-            transition: color 0.2s;
+            margin: 0 10px;
+            transition: color 0.2s ease;
         }
 
         footer a:hover {
             color: #ffffff;
         }
-
-        /* Proxy Iframe Styles */
-        #proxy-frame {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            border: none;
-            z-index: 10;
-            display: none;
-            background-color: #ffffff; /* White background while page loads */
-        }
     </style>
 </head>
 <body>
-    <!-- Particle Layer -->
+
+    <!-- White Floating Particles Context -->
     <canvas id="particle-canvas"></canvas>
 
-    <!-- UI Interaction Layer -->
-    <div class="ui-container" id="main-ui">
-        <div title="" class="flex-center logo-wrapper header-center">
-            <img class="logo" src="splash.svg" alt="" />
-            <h1>Splash V3</h1>
-        </div>
-        <div class="flex-center desc left-margin">
-            <p>An pr*xy powered by Scramjet to bypass network restrictions seamlessly.</p>
+    <!-- Main Content Panel -->
+    <div class="main-container">
+        
+        <div title="SPLASH V3 Logo" class="flex-center logo-wrapper header-center">
+            <h1>SPLASH V3</h1>
         </div>
 
-        <!-- Functional Target Proxy Input Area -->
-        <form id="sj-form" class="flex-center">
-            <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-            <input id="sj-address" type="text" placeholder="Enter URL or search freely..." autocomplete="off" />
+        <div class="flex-center desc">
+            <p>
+                SPLASH V3 is a web pr*xy powered by Scramjet and Wisp.
+            </p>
+        </div>
+
+        <!-- Enter URL Box -->
+        <form id="url-form" class="flex-center" onsubmit="event.preventDefault();">
+            <input id="url-address" type="text" placeholder="Enter URL (e.g., https://discord.com)" />
         </form>
 
-        <div class="desc left-margin">
+        <!-- Search Box -->
+        <form id="sj-form" class="flex-center">
+            <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+            <input id="sj-address" type="text" placeholder="Search the web freely" />
+        </form>
+
+        <div class="desc">
             <p id="sj-error"></p>
             <pre id="sj-error-code"></pre>
         </div>
-    </div>
 
-    <!-- Proxy Iframe -->
-    <iframe id="proxy-frame"></iframe>
+    </div>
 
     <footer>
         <div>
-            <a title="GitHub" href="https://github.com/zaka13X/Splash">My GitHub</a>
+            <a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop">Mercury Workshop</a>
+            <a title="The example demo app" href="https://github.com/MercuryWorkshop">GitHub</a>
             <a title="License information" href="credits.html">Credits</a>
         </div>
         <div>
-            <span>Scramjet &copy; MW 2026</span>
+            <span>SPLASH V3 &copy; MW 2026</span>
         </div>
     </footer>
 
-    <!-- Combined Scripts -->
+    <!-- Script for Dynamic Floating Particles Background -->
     <script>
-        // Custom logic to hide UI and trigger iframe
-        const form = document.getElementById('sj-form');
-        const addressInput = document.getElementById('sj-address');
-        const mainUI = document.getElementById('main-ui');
-        const footer = document.querySelector('footer');
-        const proxyFrame = document.getElementById('proxy-frame');
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const url = addressInput.value.trim();
-            if (!url) return;
+        let particlesArray = [];
+        const numberOfParticles = 60;
 
-            // Hide the homepage UI smoothly
-            mainUI.style.opacity = '0';
-            footer.style.opacity = '0';
-            
-            setTimeout(() => {
-                mainUI.style.display = 'none';
-                footer.style.display = 'none';
-            }, 300);
+        function setCanvasSize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        setCanvasSize();
+        window.addEventListener('resize', setCanvasSize);
 
-            // Fetch the proxied URL from scramjet
-            // Assuming scramjet module is globally defined and has a proxy url constructor
-            let proxiedUrl = '';
-            
-            // This relies on your existing `search.js` or `index.js` logic.
-            // Adjust the window.__scramjet$encode or scrambling function to fit your exact scramjet setup:
-            try {
-                // If your scramjet configuration creates a URL through specific backend configs:
-                proxiedUrl = __scramjet$encode ? __scramjet$encode(url) : url; 
-            } catch (err) {
-                proxiedUrl = url;
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.2;
             }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
 
-            // Set the iframe source and make it visible
-            proxyFrame.src = proxiedUrl;
-            proxyFrame.style.display = 'block';
-        });
+                if (this.x > canvas.width) this.x = 0;
+                else if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                else if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
     </script>
 </body>
 </html>
