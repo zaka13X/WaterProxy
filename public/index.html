@@ -6,101 +6,53 @@
     <title>WaterProxy</title>
     <link rel="shortcut icon" content="favicon.webp" />
     <link rel="stylesheet" href="" />
-
     
     <script src="/scram/scramjet.all.js"></script>
-    <script src="/baremux/index.js"></script>
-    
+    <!-- Epoxy and Wisp Client Implementations -->
+    <script src="/epoxy.js"></script>
+    <!-- Loaded Wisp Client implementation via CDN -->
+    <script src="https://fastly.jsdelivr.net/npm/@wisp-cms/client/dist/index.js"></script>
     
     <script src="/register-sw.js" defer></script>
     <script src="/search.js" defer></script>
     <script src="/index.js" defer></script>
+
+    <!-- Wisp Connection Initializer for Epoxy -->
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                // Establish connection using Epoxy transport
+                const connection = await window.Epoxy.connect("wss://wisp.mercurywork.shop");
+                console.log("Wisp connection has connected!");
+                
+                // Set connection globally for your service worker / index scripts
+                window.wispConnection = connection; 
+            } catch (error) {
+                console.error("Failed to initialize Wisp connection:", error);
+                const errorElement = document.getElementById("sj-error");
+                if (errorElement) {
+                    errorElement.innerText = "An error occured. Please try and restart.";
+                }
+            }
+        });
+    </script>
 </head>
 <body style="background-color: black; color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;">
-
     <div title="Logo" class="flex-center logo-wrapper header-center" style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 4rem;">
         <img class="logo" src="idk.png" alt="" style="max-width: 150px; margin-bottom: 1rem;" />
-        <h1 style="margin: 0; font-weight: 300;">WaterProxy</h1>
+        <h1 style="margin: 0; font-weight: 300;">WaterProxy (b1.0.0)</h1>
     </div>
-
     <div class="flex-center desc left-margin" style="display: flex; justify-content: center; text-align: center; max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
         <p style="line-height: 1.6; color: #ccc;"></p>
     </div>
-
-    <!-- Form handling handles 'Enter' key submission natively -->
+    <!-- Form handling handles Enter key submission natively -->
     <form id="sj-form" class="flex-center" style="display: flex; justify-content: center; margin-bottom: auto; padding: 0 1rem;">
         <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
         <input id="sj-address" type="text" placeholder="Search the web freely" style="width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background-color: #222; color: white; font-size: 1rem; outline: none;" />
     </form>
-
     <div class="desc left-margin" style="text-align: center;">
         <p id="sj-error" style="color: #ff6b6b;"></p>
         <pre id="sj-error-code" style="color: #ff6b6b;"></pre>
     </div>
-
-    <!-- Dynamic Container for Scramjet Output -->
-    <div id="iframe-container" style="display: none; width: 100%; flex-grow: 1; height: 100%;">
-        <iframe id="sj-iframe" style="width: 100%; height: 100%; border: none; background: white;"></iframe>
-    </div>
-
-    <footer id="sj-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 2rem; font-size: 0.9rem; border-top: 1px solid #222; color: #888;">
-        <div>
-            <a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop" style="color: #888; text-decoration: none; margin-right: 1.5rem;">Mercury Workshop</a>
-            <a title="The example demo app" href="https://github.com/MercuryWorkshop/Scramjet-Demo" style="color: #888; text-decoration: none; margin-right: 1.5rem;">GitHub</a>
-            <a title="License information" href="credits.html" style="color: #888; text-decoration: none;">Credits</a>
-        </div>
-        <div>
-            <span>&copy; zaka13X 2026</span>
-        </div>
-    </footer>
-
-    
-    <script>
-        document.getElementById('sj-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const addressInput = document.getElementById('sj-address').value.trim();
-            const searchEngine = document.getElementById('sj-search-engine').value;
-            const errorEl = document.getElementById('sj-error');
-            
-            if (!addressInput) return;
-
-            try {
-                // Ensure BareMux and Service Worker registration helper functions exist from template
-                if (typeof window.BareMux === 'undefined') {
-                    throw new Error('BareMux failed to load.');
-                }
-
-                // Process the URL using template search logic helper (usually found in search.js)
-                let targetUrl = addressInput;
-                if (!/^https?:\/\//i.test(targetUrl) && !targetUrl.includes('.')) {
-                    targetUrl = searchEngine.replace('%s', encodeURIComponent(targetUrl));
-                } else if (!/^https?:\/\//i.test(targetUrl)) {
-                    targetUrl = 'https://' + targetUrl;
-                }
-
-                // Construct Scramjet Proxy path using template configuration variables
-                // Default Scramjet structure uses window.__sj$config.prefix
-                const proxyPrefix = window.__sj$config?.prefix || '/scram/';
-                const encodedUrl = proxyPrefix + btoa(targetUrl).replace(/\//g, '_').replace(/\+/g, '-');
-
-                // Hide landing page elements, display proxy iframe
-                document.querySelector('.logo-wrapper').style.display = 'none';
-                document.getElementById('sj-form').style.display = 'none';
-                document.getElementById('sj-footer').style.display = 'none';
-                
-                const container = document.getElementById('iframe-container');
-                const iframe = document.getElementById('sj-iframe');
-                container.style.display = 'block';
-                
-                // Load the isolated site within the scoped Service Worker path
-                iframe.src = encodedUrl;
-
-            } catch (err) {
-                errorEl.textContent = 'Connection failed: ' + err.message;
-                console.error(err);
-            }
-        });
-    </script>
 </body>
 </html>
