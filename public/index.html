@@ -1,66 +1,253 @@
 <!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-		/>
-		<title>Scramjet</title>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>Splash V3</title>
+    <link rel="shortcut icon" content="favicon.webp" />
+    
+    <!-- Original Proxy Hooks -->
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <link rel="stylesheet" href="index.css" />
+    <script src="register-sw.js" defer></script>
+    <script src="search.js" defer></script>
+    <script src="index.js" defer></script>
 
-		<link rel="shortcut icon" content="favicon.webp" />
-	
-		<script src="/scram/scramjet.all.js"></script>
-		<script src="/baremux/index.js"></script>
-		
-		<link rel="stylesheet" href="index.css" />
-		<script src="register-sw.js" defer></script>
-		<script src="search.js" defer></script>
-		<script src="index.js" defer></script>
-	</head>
+    <style>
+        /* Base Black UI Styles */
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
 
-	<body>
-		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-			<img class="logo" src="sj.png" alt="Scramjet" />
-			<h1>Scramjet | MW</h1>
-		</div>
-		<div class="flex-center desc left-margin">
-			<p>
-				Scramjet is an experimental interception based web proxy designed to
-				evade internet censorship, bypass arbitrary web browser restrictions and
-				innovate web proxy technologies.
-			</p>
-		</div>
+        /* Ambient Background Particle Canvas */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
 
-		<form id="sj-form" class="flex-center">
-			<input
-				id="sj-search-engine"
-				value="https://www.google.com/search?q=%s"
-				type="hidden"
-			/>
-			<input id="sj-address" type="text" placeholder="Search the web freely" />
-		</form>
-		<div class="desc left-margin">
-			<p id="sj-error"></p>
-			<pre id="sj-error-code"></pre>
-		</div>
-		<footer>
-			<div>
-				<a
-					title="The Mercury Workshop GitHub organization"
-					href="https://github.com/MercuryWorkshop"
-					>Mercury Workshop</a
-				>
-				<a
-					title="The example demo app for Scramjet"
-					href="https://github.com/MercuryWorkshop/Scramjet-Demo"
-					>GitHub</a
-				>
-				<a title="License information" href="credits.html">Credits</a>
-			</div>
-			<div>
-				<span>Scramjet &copy; MW 2025</span>
-			</div>
-		</footer>
-	</body>
+        /* UI Container Layer */
+        .ui-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: auto;
+        }
+
+        .logo-wrapper {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            max-width: 80px;
+            height: auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            margin: 10px 0;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .desc {
+            text-align: center;
+            color: #aaaaaa;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Interactive Enter URL Elements */
+        #sj-form {
+            width: 100%;
+            position: relative;
+        }
+
+        #sj-address {
+            width: 100%;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        #sj-address:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        #sj-error {
+            color: #ff5252;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        #sj-error-code {
+            color: #ff5252;
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        /* Footer Overlay */
+        footer {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #666666;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        footer a {
+            color: #888888;
+            text-decoration: none;
+            margin-right: 15px;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Layer -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- UI Interaction Layer -->
+    <div class="ui-container">
+        <div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
+            <img class="logo" src="splash.svg" alt="Scramjet" />
+            <h1>Splash V3</h1>
+        </div>
+
+        <div class="flex-center desc left-margin">
+            <p>
+                An  pr*xy powered by Scramjet to bypass network restrictions seamlessly.
+            </p>
+        </div>
+
+        <!-- Functional Target Proxy Input Area -->
+        <form id="sj-form" class="flex-center">
+            <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+            <input id="sj-address" type="text" placeholder="Enter URL or search freely..." autocomplete="off" />
+        </form>
+
+        <div class="desc left-margin">
+            <p id="sj-error"></p>
+            <pre id="sj-error-code"></pre>
+        </div>
+    </div>
+
+    <footer>
+        <div>
+            <a title="The Mercury Workshop GitHub organization" href="https://github.com/MercuryWorkshop">Mercury Workshop</a>
+            <a title="The example demo app for Scramjet" href="https://github.com/MercuryWorkshop/Scramjet-Demo">GitHub</a>
+            <a title="License information" href="credits.html">Credits</a>
+        </div>
+        <div>
+            <span>Scramjet &copy; MW 2026</span>
+        </div>
+    </footer>
+
+    <!-- White Floating Particles Animation Script -->
+    <script>
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        const maxParticles = 60;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < maxParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+    </script>
+</body>
 </html>
