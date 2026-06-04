@@ -1,67 +1,66 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-    <title>WaterProxy</title>
-    <!-- Fallback icon to prevent 404 -->
-    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+<!doctype html> 
+<html> 
+<head> 
+<meta charset="utf-8" /> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" /> 
+<title>WaterProxy</title> 
 
-    <!-- Core Scramjet scripts with fallback protection -->
-    <script src="/scram/scramjet.codecs.js" onerror="console.warn('Scramjet codecs script not found locally.')"></script>
-    <script src="/scram/scramjet.config.js" onerror="console.warn('Scramjet config script not found locally.')"></script>
-    
-    <script>
-        // Directly register the Scramjet service worker using standard navigator.serviceWorker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    // Scope set to '/' to ensure full site interception control
-                    const registration = await navigator.serviceWorker.register('/sw.js', { 
-                        scope: '/' 
-                    });
-                    console.log('Scramjet Service Worker registered successfully:', registration.scope);
-                } catch (error) {
-                    console.error('Service Worker registration failed:', error);
-                    const errorElement = document.getElementById("sj-error");
-                    if (errorElement) {
-                        errorElement.innerText = "Service worker initialization failed.";
-                    }
-                }
-            });
-        } else {
-            console.error('Service Workers are not supported in this browser.');
-        }
-    </script>
+<!-- Fallback icon to prevent 404 --> 
+<link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" /> 
 
-    <!-- Project logic execution scripts with error trapping -->
-    <script src="/search.js" defer onerror="console.warn('search.js missing')"></script>
-    <script src="/index.js" defer onerror="console.warn('index.js missing')"></script>
-</head>
-<body style="background-color: black; color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;">
+<!-- Core Scramjet scripts with fallback protection --> 
+<script src="/scram/scramjet.all.js" onerror="console.warn('Scramjet bundle script not found locally.')"></script> 
 
-    <div title="Logo" class="flex-center logo-wrapper header-center" style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 4rem;">
-        <!-- SVGs prevent 404 images when hosted locally -->
-        <svg class="logo" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.5" style="margin-bottom: 1rem;">
-            <path d="M12 22c4.418 0 8-3.582 8-8 0-4.42-8-12-8-12S4 9.58 4 14c0 4.418 3.582 8 8 8z"/>
-        </svg>
-        <h1 style="margin: 0; font-weight: 300;">WaterProxy (b1.0.0:SJ)</h1>
-    </div>
+<script> 
+// Directly register the Scramjet service worker using standard navigator.serviceWorker 
+if ('serviceWorker' in navigator) { 
+    window.addEventListener('load', async () => { 
+        try { 
+            // Scope set to '/' to ensure full site interception control 
+            const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' }); 
+            console.log('Scramjet Service Worker registered successfully:', registration.scope); 
+        } catch (error) { 
+            console.error('Service Worker registration failed:', error); 
+            const errorElement = document.getElementById("sj-error"); 
+            if (errorElement) { 
+                errorElement.innerText = "Service worker initialization failed."; 
+            } 
+        } 
+    }); 
+} else { 
+    console.error('Service Workers are not supported in this browser.'); 
+} 
+</script> 
 
-    <div class="flex-center desc left-margin" style="display: flex; justify-content: center; text-align: center; max-width: 600px; margin: 2rem auto; padding: 0 1rem;">
-        <p style="line-height: 1.6; color: #ccc;"></p>
-    </div>
+<!-- Project logic execution scripts with error trapping --> 
+<script src="/search.js" defer onerror="console.warn('search.js missing')"></script> 
+<script src="/index.js" defer onerror="console.warn('index.js missing')"></script> 
 
-    <!-- Form handling handles Enter key submission natively -->
-    <form id="sj-form" class="flex-center" style="display: flex; justify-content: center; margin-bottom: auto; padding: 0 1rem;">
-        <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
-        <input id="sj-address" type="text" placeholder="Search the web freely" style="width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background-color: #222; color: white; font-size: 1rem; outline: none;" />
-    </form>
+</head> 
+<body style="background-color: black; color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;"> 
 
-    <div class="desc left-margin" style="text-align: center; margin-bottom: 2rem;">
-        <p id="sj-error" style="color: #ff6b6b; margin: 0;"></p>
-        <pre id="sj-error-code" style="color: #ff6b6b; margin: 0;"></pre>
-    </div>
+<div title="Logo" class="flex-center logo-wrapper header-center" style="display: flex; justify-content: center; align-items: center; flex-direction: column; margin-top: 4rem;"> 
+    <!-- SVGs prevent 404 images when hosted locally --> 
+    <svg class="logo" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.5" style="margin-bottom: 1rem;"> 
+        <path d="M12 22c4.418 0 8-3.582 8-8 0-4.42-8-12-8-12S4 9.58 4 14c0 4.418 3.582 8 8 8z"/> 
+    </svg> 
+    <h1 style="margin: 0; font-weight: 300;">WaterProxy (b1.0.0:SJ)</h1> 
+</div> 
 
-</body>
+<div class="flex-center desc left-margin" style="display: flex; justify-content: center; text-align: center; max-width: 600px; margin: 2rem auto; padding: 0 1rem;"> 
+    <p style="line-height: 1.6; color: #ccc;"></p> 
+</div> 
+
+<!-- Form handling handles Enter key submission natively --> 
+<form id="sj-form" class="flex-center" style="display: flex; justify-content: center; margin-bottom: auto; padding: 0 1rem;"> 
+    <input id="sj-search-engine" value="https://www.google.com/search?q=%s" type="hidden" /> 
+    <input id="sj-address" type="text" placeholder="Search the web freely" style="width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: 1px solid #444; background-color: #222; color: white; font-size: 1rem; outline: none;" /> 
+</form> 
+
+<div class="desc left-margin" style="text-align: center; margin-bottom: 2rem;"> 
+    <p id="sj-error" style="color: #ff6b6b; margin: 0;"></p> 
+    <pre id="sj-error-code" style="color: #ff6b6b; margin: 0;"></pre> 
+</div> 
+
+</body> 
 </html>
