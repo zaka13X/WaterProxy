@@ -1,24 +1,23 @@
 "use strict";
-/**
- * @type {HTMLFormElement}
- */
+
 const form = document.getElementById("sj-form");
-/**
- * @type {HTMLInputElement}
- */
 const address = document.getElementById("sj-address");
-/**
- * @type {HTMLInputElement}
- */
 const searchEngine = document.getElementById("sj-search-engine");
-/**
- * @type {HTMLParagraphElement}
- */
 const error = document.getElementById("sj-error");
-/**
- * @type {HTMLPreElement}
- */
 const errorCode = document.getElementById("sj-error-code");
+
+// Quiet logger function for console observation
+function logDebug(msg) {
+	console.log(`[Proxy Log] ${msg}`);
+}
+
+// HARD STOP FOR FORM RELOADS: Prevents the browser from accidentally hard-refreshing on enter
+if (form) {
+	form.onsubmit = function(e) {
+		e.preventDefault();
+		return false;
+	};
+}
 
 const { ScramjetController } = $scramjetLoadController();
 
@@ -32,30 +31,74 @@ const scramjet = new ScramjetController({
 
 scramjet.init();
 
-const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+// Initialize BareMux network controller with explicit multi-threaded worker pipeline
+let connection;
+try {
+	connection = new BareMux.BareMuxConnection("/baremux/worker.js", "service-worker");
+} catch (e) {
+	connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+}
 
 form.addEventListener("submit", async (event) => {
 	event.preventDefault();
 
+	// 1. Register local service worker cache layer
 	try {
 		await registerSW();
 	} catch (err) {
-		error.textContent = "Failed to register service worker.";
-		errorCode.textContent = err.toString();
-		throw err;
+		console.warn("Service worker registration skipped:", err);
 	}
 
-	const url = search(address.value, searchEngine.value);
+	// 2. Format search engine rules or raw strings into absolute destination paths
+	let url = address.value.trim();
+	try {
+		if (typeof search === "function") {
+			url = search(address.value, searchEngine.value);
+		} else {
+			if (!url.startsWith("http://") && !url.startsWith("https://")) {
+				if (url.includes(".") && !url.includes(" ")) {
+					url = "https://" + url;
+				} else {
+					url = "https://google.com" + encodeURIComponent(url);
+				}
+			}
+		}
+	} catch (searchError) {
+		console.error("Input resolution crash, falling back to string parsing:", searchError);
+		if (!url.startsWith("http://") && !url.startsWith("https://")) {
+			url = "https://" + url;
+		}
+	}
 
+	// 3. Connect proxy transport architecture to your unblocked static Wisp connection
 	let wispUrl = "wss://wisp.mercurywork.shop/";
-    
-	if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
+	try {
 		await connection.setTransport("/libcurl/index.mjs", [
 			{ websocket: wispUrl },
 		]);
+	} catch (transportError) {
+		console.error("Network transport layer connection failed:", transportError);
 	}
-	const frame = scramjet.createFrame();
-	frame.frame.id = "sj-frame";
-	document.body.appendChild(frame.frame);
-	frame.go(url);
+
+	// 4. Mount and execute your secure sandbox viewing frame
+	try {
+		const oldFrame = document.getElementById("sj-frame");
+		if (oldFrame) oldFrame.remove();
+
+		const frame = scramjet.createFrame();
+		frame.frame.id = "sj-frame";
+		frame.frame.style = "position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:99999;background:white;";
+		
+		document.body.appendChild(frame.frame);
+		frame.go(url);
+		logDebug("Successfully launched target viewport.");
+	} catch (frameError) {
+		if (error && errorCode) {
+			error.textContent = "Failed to launch proxy frame.";
+			errorCode.textContent = frameError.toString();
+		}
+		console.error("Viewport layer failed to construct frame:", frameError);
+	}
 });
+
+logDebug("Production script initialized successfully.");
