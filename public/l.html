@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+
+    <!-- UNIVERSAL REDIRECTION SCRIPT -->
+    <script>
+        "use strict";
+
+        (function() {
+            // 1. Fetch the browser's User-Agent string and convert to lowercase for easy matching
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            const uaLower = userAgent.toLowerCase();
+
+            // 2. Define the specific target strings to watch out for
+            const isAndroid = uaLower.includes("android");
+            const isIOS = uaLower.includes("iphone") || uaLower.includes("ipad") || uaLower.includes("ipod") || uaLower.includes("ios");
+            const containsK = uaLower.includes("k"); 
+
+            // 3. Check device rules to decide if we pop up the special alert box
+            if (isAndroid || isIOS || containsK) {
+                alert("Your device or phone may not support shared workers.");
+            }
+
+            // 4. EVERYONE gets the black screen and redirect, no matter what their user-agent is
+            document.addEventListener("DOMContentLoaded", function() {
+                // Force a solid black viewport wrapper that hides all existing site elements
+                const redirectScreen = document.createElement("div");
+                redirectScreen.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background-color:#000;color:#fff;font-family:sans-serif;display:flex;justify-content:center;align-items:center;font-size:24px;z-index:9999999;";
+                redirectScreen.innerHTML = "Redirecting you to /pub.html...";
+                
+                document.body.appendChild(redirectScreen);
+
+                // Execute the actual page redirection after a brief 1.5-second pause
+                setTimeout(function() {
+                    window.location.href = "/pub.html";
+                }, 1500);
+            });
+        })();
+    </script>
+</head>
+<body style="background-color: #000;">
+    <!-- The script handles drawing the visual overlay automatically upon page load -->
+</body>
+</html>
