@@ -17,7 +17,7 @@
             // 2. Define the specific target strings to watch out for
             const isAndroid = uaLower.includes("android");
             const isIOS = uaLower.includes("iphone") || uaLower.includes("ipad") || uaLower.includes("ipod") || uaLower.includes("ios");
-            const containsK = uaLower.includes("k"); 
+            const containsK = uaLower.includes("mac"); 
 
             // 3. Check device rules to decide if we pop up the special alert box
             if (isAndroid || isIOS || containsK) {
