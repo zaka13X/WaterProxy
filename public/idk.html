@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>about:blank#blocked</title>
+    <script>
+        // Fetch public IP address using ipify API
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                // Show the IP address in a popup
+                alert("Your IP is: " + data.ip);
+                
+                // Redirect back to index.html immediately (change '0' to adjust delay in seconds)
+                window.location.replace("pub.html");
+            })
+            .catch(error => {
+                console.error('Error', error);
+                // Fallback redirect if the API call fails
+                window.location.replace("pub.html");
+            });
+    </script>
+</head>
+<body>
+    <p>Loading...</p>
+</body>
+</html>
